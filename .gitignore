@@ -1,0 +1,16 @@
+vendor/pdfjs/*
+!vendor/pdfjs/README.md
+*.part
+__pycache__/
+.DS_Store
+.tmp/
+output/
+
+# Local runtimes, downloaded archives and private settings
+runtime/
+.env
+.env.*
+!.env.example
+*.log
+.venv/
+venv/

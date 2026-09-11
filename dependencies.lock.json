@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "python": {
+    "version": "3.14.7",
+    "architecture": "windows-amd64",
+    "url": "https://www.python.org/ftp/python/3.14.7/python-3.14.7-embed-amd64.zip",
+    "sha256": "d297e5ff019966817ad8502465176139f2d3d840fa4ed84b13bed399a6ab1f15",
+    "source": "https://www.python.org/downloads/release/python-3147/"
+  },
+  "pdfjs": {
+    "version": "6.3.289",
+    "url": "https://registry.npmjs.org/pdfjs-dist/-/pdfjs-dist-6.3.289.tgz",
+    "integrity": "sha512-ZHjSVpDa3D6izMq8/04lvkhkATUmL9px6ChPaXc1k6nU2Mrhlg1/7F0bdUqCwUjw3NsPTfPZsMDUU6ZIcRaeQw==",
+    "source": "https://registry.npmjs.org/pdfjs-dist/6.3.289"
+  }
+}

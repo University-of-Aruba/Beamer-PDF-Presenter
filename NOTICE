@@ -1,0 +1,16 @@
+Beamer PDF Presenter
+
+The application is distributed under the Apache License, Version 2.0.
+
+This application includes modified portions of Beamer Presenter 1.1.0,
+originally distributed under the MIT License, Copyright (c) 2026.
+The original copyright and permission notice is retained verbatim in
+LICENSES/original-beamer-presenter-MIT.txt.
+
+The distribution includes separately licensed third-party components.
+See THIRD_PARTY_NOTICES.md, LICENSES/, vendor/pdfjs/ and, in the Windows
+package, runtime/python/LICENSE.txt for their attribution and license terms.
+The upstream source release for Liberation Sans 1.07.4 is included in LICENSES/liberation-fonts-1.07.4.tar.gz.
+
+Institutional names and logos remain subject to their owners' rights.
+The software license does not grant rights to those names or marks.

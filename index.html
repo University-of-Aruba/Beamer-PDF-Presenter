@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" type="image/png" id="brand-icon" href="logos/sisstem.png">
+  <title>Beamer PDF Presenter</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="presenter-app" class="presenter-app" hidden>
+    <header class="topbar">
+      <div class="brand-block">
+        <img id="brand-mark" class="brand-mark" src="logos/sisstem.png" alt="" width="42" height="42">
+        <div><h1>Beamer PDF Presenter <span class="version-label">1.1</span> <span id="brand-label" class="brand-label">SISSTEM</span></h1><p id="deck-name" class="deck-name">No PDF loaded</p></div>
+      </div>
+      <div class="topbar-actions">
+        <div id="connection-status" class="status-pill" role="status" aria-live="polite">
+          <span class="status-dot" aria-hidden="true"></span><span id="connection-label">Audience closed</span>
+        </div>
+        <button id="open-audience-button" class="button button-primary" type="button">Open audience window</button>
+      </div>
+    </header>
+
+    <div class="presenter-workspace">
+      <aside class="panel pdf-library" aria-labelledby="pdf-library-heading">
+        <div class="library-heading"><h2 id="pdf-library-heading">PDF folder</h2></div>
+        <div class="library-actions">
+          <button id="open-pdf-button" class="button button-secondary" type="button">Open PDF</button>
+          <button id="choose-folder-button" class="button button-secondary" type="button">Open PDF folder</button>
+        </div>
+        <p id="pdf-folder-name" class="folder-name" hidden></p>
+        <p id="pdf-library-status" class="library-status" role="status">Open a PDF folder to list its PDFs. Double-click or double-tap a filename to open it.</p>
+        <nav id="pdf-library-list" class="pdf-library-list" aria-label="PDFs in selected folder"></nav>
+      </aside>
+    <section id="preview-layout" class="presenter-layout" aria-label="Presenter previews">
+      <section id="current-panel" class="panel current-panel" aria-labelledby="current-heading">
+        <div class="panel-header">
+          <div><span id="current-eyebrow" class="eyebrow">On screen</span><h2 id="current-heading">Current page</h2></div>
+          <span id="current-page-badge" class="page-badge">- / -</span>
+        </div>
+        <div id="current-stage" class="presentation-stage">
+          <div id="current-slide" class="slide-surface" aria-label="Current PDF page preview">
+            <div class="empty-state"><strong>Load a PDF</strong><span>Drop a file anywhere or use “Open PDF”.</span></div>
+          </div>
+          <span id="current-blanked-hint" class="current-blanked-hint" hidden>Audience screen is blanked</span>
+        </div>
+      </section>
+
+      <div id="preview-splitter" class="preview-splitter" role="separator" tabindex="0"
+           aria-orientation="vertical" aria-labelledby="current-heading" aria-controls="current-panel"
+           aria-valuemin="15" aria-valuemax="85" aria-valuenow="60"
+           aria-describedby="splitter-help" title="Drag to resize previews. Double-click to reset.">
+        <span class="splitter-grip" aria-hidden="true"></span>
+      </div>
+      <span id="splitter-help" class="visually-hidden">Drag left or right, or use Left and Right arrows. Hold Shift for larger steps. Home and End maximize a preview; Enter resets the split.</span>
+
+      <section class="panel next-panel" aria-labelledby="next-heading">
+        <div class="panel-header">
+          <div><span class="eyebrow">Coming next</span><h2 id="next-heading">Next page</h2></div>
+          <span id="next-page-badge" class="page-badge page-badge-muted">-</span>
+        </div>
+        <div id="next-slide" class="slide-surface slide-surface-small" aria-label="Next PDF page preview">
+          <div class="empty-state empty-state-small"><span>The next page appears here.</span></div>
+        </div>
+      </section>
+    </section>
+
+    </div>
+
+    <section class="panel bottom-controls" aria-label="Presentation and countdown controls">
+      <section class="presentation-controls" aria-label="Presentation controls">
+        <div class="controls-heading"><h2>Presentation</h2><span class="section-hint">Private elapsed timer</span></div>
+        <div class="presentation-control-row">
+          <div class="nav-row" aria-label="Page navigation">
+            <button id="previous-button" class="icon-button" type="button" aria-label="Previous page" title="Previous page (Left / Page Up)">←</button>
+            <label class="page-input-label"><span class="visually-hidden">Go to page</span><input id="page-input" class="page-input" type="number" min="1" value="1" inputmode="numeric" disabled><span id="page-total" class="page-total">of -</span></label>
+            <button id="next-button" class="icon-button" type="button" aria-label="Next page" title="Next page (Right / Space / Page Down)">→</button>
+          </div>
+          <div class="compact-time"><span class="eyebrow">Elapsed</span><strong id="timer" class="time-value">00:00</strong></div>
+          <div class="compact-time"><span class="eyebrow">Local time</span><strong id="clock" class="time-value">--:--</strong></div>
+        </div>
+        <div class="control-buttons">
+          <button id="timer-button" class="button button-secondary" type="button"><span id="timer-button-label">Start elapsed</span> <kbd>T</kbd></button>
+          <button id="reset-timer-button" class="button button-quiet" type="button">Reset elapsed <kbd>R</kbd></button>
+          <button id="laser-button" class="button button-secondary" type="button" aria-pressed="false" disabled title="Show a laser pointer on the current slide (L)">Laser pointer <kbd>L</kbd></button>
+          <button id="blank-button" class="button button-secondary" type="button" disabled><span id="blank-button-label">Blank screen</span> <kbd>B</kbd></button>
+        </div>
+      </section>
+
+      <section class="countdown-controls" aria-labelledby="countdown-heading">
+        <div class="controls-heading"><h2 id="countdown-heading">Exercise / exam countdown</h2><span id="countdown-status" class="countdown-status" role="status">Ready · presenter only</span></div>
+        <div class="countdown-main-row">
+          <strong id="countdown-readout" class="countdown-readout" role="timer" aria-live="off">05:00</strong>
+          <form id="countdown-duration-form" class="duration-form" novalidate>
+            <label class="duration-field"><span>Minutes</span><input id="countdown-minutes" type="number" min="0" max="1440" step="1" value="5" inputmode="numeric" aria-label="Countdown minutes"></label>
+            <span class="duration-colon" aria-hidden="true">:</span>
+            <label class="duration-field seconds-field"><span>Seconds</span><input id="countdown-seconds" type="number" min="0" max="59" step="1" value="0" inputmode="numeric" aria-label="Countdown seconds"></label>
+            <button id="countdown-set-button" class="button button-secondary" type="submit" title="Apply duration and reset the countdown">Set</button>
+          </form>
+          <div class="countdown-buttons">
+            <button id="countdown-toggle-button" class="button button-primary" type="button" title="Start or pause countdown (C)">Start countdown</button>
+            <button id="countdown-reset-button" class="button button-quiet" type="button" title="Reset and pause countdown">Reset</button>
+          </div>
+        </div>
+        <div class="countdown-options">
+          <label class="select-field"><span>Display</span><select id="countdown-display"><option value="hidden">Presenter only</option><option value="corner">On slide (digital)</option><option value="analog">Full-screen analog</option></select></label>
+          <label class="select-field"><span>Corner</span><select id="countdown-corner" disabled><option value="top-left">Top left</option><option value="top-right" selected>Top right</option><option value="bottom-left">Bottom left</option><option value="bottom-right">Bottom right</option></select></label>
+          <button id="countdown-hide-button" class="text-button" type="button" disabled title="Hide the countdown without stopping it (H)">Hide timer / return to PDF</button>
+        </div>
+        <p id="countdown-feedback" class="countdown-feedback" role="status">Set a duration, choose a display, then start. Hiding the timer does not stop it.</p>
+      </section>
+
+      <div class="brand-controls"><label class="select-field"><span>Brand</span><select id="brand-select" aria-describedby="brand-help"><option value="sisstem.png">SISSTEM</option><option value="">BEAMER PDF PRESENTER · no logo</option></select></label><button id="refresh-brands-button" class="text-button" type="button">Refresh logos</button><span id="brand-help" class="section-hint">PNG files in the logos folder</span></div>
+      <div class="renderer-row controls-footer"><span id="renderer-label">Renderer: not loaded</span><div class="footer-actions"><span class="split-hint">Drag the divider to resize previews</span><button id="load-demo-button" class="text-button" type="button">Load demo</button><button id="help-button" class="text-button" type="button" aria-expanded="false" aria-controls="shortcut-help">Keyboard help</button></div></div>
+      <p id="pdf-load-error" class="pdf-load-error" role="alert" hidden></p>
+      <div id="shortcut-help" class="shortcut-help" hidden>
+        <div><kbd>→</kbd><kbd>Space</kbd><span>Next page</span></div>
+        <div><kbd>←</kbd><kbd>Backspace</kbd><span>Previous page</span></div>
+        <div><kbd>Home</kbd><kbd>End</kbd><span>First / last page</span></div>
+        <div><kbd>L</kbd><span>Toggle virtual laser pointer</span></div>
+        <div><kbd>B</kbd><span>Blank / restore audience screen</span></div>
+        <div><kbd>O</kbd><span>Open or focus audience window</span></div>
+        <div><kbd>T</kbd><kbd>R</kbd><span>Elapsed start-pause / reset</span></div>
+        <div><kbd>C</kbd><kbd>H</kbd><span>Countdown start-pause / hide</span></div>
+        <div><kbd>F</kbd><span>Fullscreen (audience window)</span></div>
+      </div>
+    </section>
+
+    <input id="pdf-folder-input" type="file" webkitdirectory multiple hidden>
+    <input id="pdf-file-input" type="file" accept="application/pdf,.pdf" hidden>
+    <div id="drop-overlay" class="drop-overlay" hidden><div class="drop-card"><strong>Drop PDF to load</strong><span>The file remains on this device.</span></div></div>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  </main>
+
+  <main id="audience-app" class="audience-app" hidden>
+    <div id="audience-stage" class="presentation-stage audience-stage">
+      <div id="audience-slide" class="audience-slide" aria-label="Audience presentation page"><div id="audience-waiting" class="audience-waiting"><strong>Waiting for presenter</strong><span>Load a PDF or select the full-screen analog countdown in the presenter dashboard.</span></div></div>
+    </div>
+    <div id="audience-blank" class="audience-blank" hidden aria-hidden="true"></div>
+    <div id="audience-page-indicator" class="audience-page-indicator" hidden>- / -</div>
+    <button id="audience-fullscreen-button" class="audience-control" type="button" title="Enter fullscreen (F)">Fullscreen</button>
+    <div id="audience-hint" class="audience-hint">Press <kbd>F</kbd> for fullscreen · Arrow keys change pages</div>
+  </main>
+  <script type="module" src="app.mjs"></script>
+</body>
+</html>

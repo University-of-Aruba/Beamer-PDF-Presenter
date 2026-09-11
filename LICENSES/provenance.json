@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "retrieved_on": "2026-09-09",
+  "files": {
+    "LICENSE.txt": {
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.txt",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    "LICENSES/core-js-3.50.0-MIT.txt": {
+      "url": "https://raw.githubusercontent.com/zloirock/core-js/v3.50.0/LICENSE",
+      "bytes": 1134,
+      "sha256": "b87653fff2d44426ab5cd4723cee3b1364dc8d35a0acdf098c54689543123bf8"
+    },
+    "LICENSES/quickjs-MIT.txt": {
+      "url": "https://raw.githubusercontent.com/bellard/quickjs/3d5e064e9dd67c70f7962836505a7fa067bf0a4e/LICENSE",
+      "bytes": 1130,
+      "sha256": "598fd7fc928e4350abce36e337ba5a1346923c5c692f5be92c3d8e29ddd7c18d"
+    },
+    "LICENSES/pdf-js-quickjs-MIT.txt": {
+      "url": "https://raw.githubusercontent.com/mozilla/pdf.js.quickjs/e2c5bfc8194b16f5973eea5e4e025b67be3c1015/LICENSE",
+      "bytes": 1075,
+      "sha256": "7fdaed3d938f3dfce7189db07e74773c23789143a55db81a95d09dcbfda267b0"
+    },
+    "LICENSES/liberation-fonts-1.07.4.tar.gz": {
+      "url": "https://releases.pagure.org/liberation-fonts/liberation-fonts-1.07.4.tar.gz",
+      "bytes": 2937949,
+      "sha256": "ad98b7498dc2992f7f0868f79b65ce4a720a3acdb63ab3f1f1cb6881117a5406"
+    },
+    "LICENSES/original-beamer-presenter-MIT.txt": {
+      "source": "Imported Beamer Presenter 1.1.0 LICENSE.txt, local Git commit 2cb43bc",
+      "bytes": 1056,
+      "sha256": "1126322e2cc8d165adc4c792eeb195717de2bcc7b39be1ce77959d78e87ef685"
+    }
+  },
+  "pdfjs_auxiliary_provenance": {
+    "version": "6.3.289",
+    "core_js_version": "3.50.0",
+    "core_js_evidence": "The pinned archive package/legacy/build/pdf.mjs and pdf.worker.mjs identify core-js 3.50.0 and its version-specific MIT license URL.",
+    "quickjs_revision": "3d5e064e9dd67c70f7962836505a7fa067bf0a4e",
+    "quickjs_update_commit": "https://github.com/mozilla/pdf.js/commit/7a7e4fd382481a76f55c6d735873f635c9178db1",
+    "quickjs_wrapper_license_revision": "e2c5bfc8194b16f5973eea5e4e025b67be3c1015",
+    "quickjs_wrapper_note": "The wrapper license commit adds MIT terms to the wrapper for this QuickJS revision. PDF.js v6.3.289 external/quickjs/README.md identifies QuickJS and the wrapper as MIT."
+  },
+  "liberation_source_provenance": {
+    "upstream_identification": "https://github.com/mozilla/pdf.js/blob/v6.3.289/external/standard_fonts/README.md",
+    "pdfjs_import_commit": "https://github.com/mozilla/pdf.js/commit/34a2fa72c70ee8722a740d4d328d68df3c6ecc75",
+    "upstream_ttf_comparison_url": "https://releases.pagure.org/liberation-fonts/liberation-fonts-ttf-1.07.4.tar.gz",
+    "upstream_ttf_archive_sha256": "61a7e2b6742a43c73e8762cdfeaf6dfcf9abdd2cfa0b099a9854d69bc4cfee5c",
+    "fonts": {
+      "LiberationSans-BoldItalic.ttf": {
+        "pdfjs_sha256": "a224075ac17495ad0a3af3bc0a419ac0704a8b3fd1095456201fb9b095fc281d",
+        "upstream_ttf_sha256": "cba635aca7f71a00faffe7e89a2301fbb1bb9739b4ac44329ccaf90d622b5fe3",
+        "byte_identical": false,
+        "embedded_version": "Version 1.07.4"
+      },
+      "LiberationSans-Italic.ttf": {
+        "pdfjs_sha256": "832b4406dbef23628800d3aaad21048534ac84d7e3ad955be83b8172ed8ef512",
+        "upstream_ttf_sha256": "36c6d220d11c157f499c0371f2b2aa29a4ef2aa868b6b93564d8d460ae2ffad3",
+        "byte_identical": false,
+        "embedded_version": "Version 1.07.4"
+      },
+      "LiberationSans-Bold.ttf": {
+        "pdfjs_sha256": "361c61b82d575c5c35fd9157fda8b0194bcfcd0d88ea8521a4fb5dd53d33dddc",
+        "upstream_ttf_sha256": "32f8698422f13692f85b57b32b72d726e0aae3190a7cef0b5c10a8e36ef82845",
+        "byte_identical": false,
+        "embedded_version": "Version 1.07.4"
+      },
+      "LiberationSans-Regular.ttf": {
+        "pdfjs_sha256": "f8ace1f892b2bd9dc1792ba7f097fa7588f84fed48321480e04de5390828221f",
+        "upstream_ttf_sha256": "fc977b8f8a736c45ee4126383d0b8a929af7d4f4a9c4a1c974ed5a32387db822",
+        "byte_identical": false,
+        "embedded_version": "Version 1.07.4"
+      }
+    },
+    "source_selection": "The complete upstream 1.07.4 SFD source release and its build/install scripts are included based on PDF.js upstream documentation, matching embedded version metadata, and the read-only glyph comparison. The archive includes editable definitions for all identified glyphs, including the additional upstream Cyrillic alternates.",
+    "validation_limit": "The original font build was not reproduced. PDF.js and the separately published upstream TTF binaries are not byte-identical, but their mapped glyph content matches as recorded below. Binary identity is not itself a GPL version 2 corresponding-source requirement. The PDF.js files remain unchanged.",
+    "glyph_comparison": {
+      "method": "Read-only Python standard-library parsing of TrueType cmap format 4 (Windows Unicode BMP), glyf contours/coordinates/on-curve flags, composite references, glyph IDs, glyph instruction bytes, and post glyph names. Composite glyph shape comparisons normalize referenced glyph identities. No font software was installed and no source archive code was executed.",
+      "comparison_scope": "All 668 Unicode-mapped glyphs in each of four faces, plus the complete set of decoded glyph shapes.",
+      "results_per_face": {
+        "LiberationSans-Regular.ttf": {
+          "mapped_unicode_glyphs": 668,
+          "mapped_coverage_differences": 0,
+          "mapped_outline_differences": 0,
+          "mapped_hinting_differences": 0,
+          "mapped_glyph_id_differences": 0,
+          "pdfjs_glyph_count": 681,
+          "upstream_glyph_count": 682,
+          "glyph_shapes_only_in_pdfjs": 0,
+          "extra_unmapped_upstream_glyph_names": [
+            "afii10066.alt1"
+          ],
+          "extra_glyph_definitions_present_in_source_archive": true
+        },
+        "LiberationSans-Bold.ttf": {
+          "mapped_unicode_glyphs": 668,
+          "mapped_coverage_differences": 0,
+          "mapped_outline_differences": 0,
+          "mapped_hinting_differences": 0,
+          "mapped_glyph_id_differences": 0,
+          "pdfjs_glyph_count": 681,
+          "upstream_glyph_count": 682,
+          "glyph_shapes_only_in_pdfjs": 0,
+          "extra_unmapped_upstream_glyph_names": [
+            "afii10066.alt1"
+          ],
+          "extra_glyph_definitions_present_in_source_archive": true
+        },
+        "LiberationSans-Italic.ttf": {
+          "mapped_unicode_glyphs": 668,
+          "mapped_coverage_differences": 0,
+          "mapped_outline_differences": 0,
+          "mapped_hinting_differences": 0,
+          "mapped_glyph_id_differences": 0,
+          "pdfjs_glyph_count": 681,
+          "upstream_glyph_count": 687,
+          "glyph_shapes_only_in_pdfjs": 0,
+          "extra_unmapped_upstream_glyph_names": [
+            "afiii10066.alt1",
+            "afii10068.alt1",
+            "afii10069.alt1",
+            "afii10081.alt1",
+            "afii10084.alt1",
+            "afii10090.alt1"
+          ],
+          "extra_glyph_definitions_present_in_source_archive": true
+        },
+        "LiberationSans-BoldItalic.ttf": {
+          "mapped_unicode_glyphs": 668,
+          "mapped_coverage_differences": 0,
+          "mapped_outline_differences": 0,
+          "mapped_hinting_differences": 0,
+          "mapped_glyph_id_differences": 0,
+          "pdfjs_glyph_count": 681,
+          "upstream_glyph_count": 687,
+          "glyph_shapes_only_in_pdfjs": 0,
+          "extra_unmapped_upstream_glyph_names": [
+            "afii10066.alt1",
+            "afii10068.alt1",
+            "afii10069.alt1",
+            "afii10081.alt1",
+            "afii10084.alt1",
+            "afii10090.alt1"
+          ],
+          "extra_glyph_definitions_present_in_source_archive": true
+        }
+      },
+      "interpretation": "All PDF.js glyph shapes exist in the official upstream font binaries. Additional upstream glyphs are unmapped Cyrillic alternates whose definitions exist in the supplied SFD source. These results support the upstream 1.07.4 source selection; they do not attest a reproduced original build."
+    }
+  }
+}

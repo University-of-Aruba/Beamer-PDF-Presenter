@@ -1,0 +1,103 @@
+name: Validate and package
+
+'on':
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.14'
+      - name: Run JavaScript tests
+        run: node --test tests/*.test.mjs
+      - name: Run Python tests
+        run: python -m unittest discover -s tests -p 'test_*.py'
+      - name: Prepare the locked offline PDF.js cache
+        run: python tools/cache_pdfjs.py
+      - name: Build the static demo
+        run: python tools/build_static_site.py --output output/site
+      - name: Download and verify the locked Windows runtime
+        if: runner.os == 'Windows'
+        run: python tools/download_windows_runtime.py --output .tmp/python-embed.zip
+      - name: Build the offline Windows package
+        if: runner.os == 'Windows'
+        shell: python {0}
+        run: |
+          from pathlib import Path
+          import re
+          import subprocess
+          import sys
+
+          version = Path('VERSION').read_text(encoding='utf-8').strip()
+          if not re.fullmatch(r'\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?', version):
+              raise ValueError('VERSION must contain a valid release version')
+          output = f'output/Beamer-PDF-Presenter-{version}-Windows-x64-Offline.zip'
+          subprocess.run([
+              sys.executable, 'tools/build_windows_package.py',
+              '--python-archive', '.tmp/python-embed.zip', '--output', output,
+          ], check=True)
+      - name: Verify a fresh extraction with the bundled Windows Python
+        if: runner.os == 'Windows'
+        shell: python {0}
+        run: |
+          from pathlib import Path
+          import subprocess
+          import tempfile
+          import zipfile
+
+          packages = list(Path('output').glob('Beamer-PDF-Presenter-*-Windows-x64-Offline.zip'))
+          if len(packages) != 1:
+              raise ValueError('Expected exactly one newly built Windows package')
+          with tempfile.TemporaryDirectory(prefix='presenter-windows-check-') as temporary:
+              with zipfile.ZipFile(packages[0]) as archive:
+                  archive.extractall(temporary)
+              roots = list(Path(temporary).iterdir())
+              if len(roots) != 1 or not roots[0].is_dir():
+                  raise ValueError('The package must contain one application directory')
+              root = roots[0]
+              subprocess.run([
+                  str(root / 'runtime/python/python.exe'),
+                  str(root / 'launch_windows.py'), '--check',
+              ], cwd=root, check=True, timeout=60)
+      - name: Upload the verified offline Windows download
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: Beamer-PDF-Presenter-Windows-x64-${{ github.run_number }}
+          path: |
+            output/Beamer-PDF-Presenter-*-Windows-x64-Offline.zip
+            output/Beamer-PDF-Presenter-*-Windows-x64-Offline.sha256
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30

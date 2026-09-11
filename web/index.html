@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A free PDF presenter for university lecturers: current and next slides, a separate audience view, a laser pointer and classroom timers.">
+  <meta name="color-scheme" content="dark">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>Beamer PDF Presenter · For every lecture</title>
+  <link rel="stylesheet" href="welcome.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to main content</a>
+  <header><a class="wordmark" href="./">Beamer PDF Presenter</a><a href="{{SOURCE_URL}}">Project on GitHub</a></header>
+  <main id="main">
+    <section class="hero">
+      <p class="eyebrow">For lecturers, across disciplines</p>
+      <h1>Present your PDF.<br>Keep your place.</h1>
+      <p class="intro">A clear view of the current and next page for you, and a clean full-screen view for your audience. Bring slides, readings, artworks or case studies. No LaTeX knowledge needed.</p>
+      <div class="actions"><a class="button primary" href="presenter/">Try the presenter</a><a class="button secondary" href="{{DOWNLOAD_URL}}">Get the Windows download</a></div>
+      <p class="note">The browser demo needs internet to load. Choose the Windows ZIP for dependable offline teaching. Selected PDFs stay in your browser.</p>
+      {{LOCAL_BUILD_NOTE}}
+    </section>
+    <section class="features" aria-label="Teaching tools">
+      <article><span class="number">01</span><h2>Stay one page ahead</h2><p>See the next page privately. Move the audience window to the classroom screen and present in full screen.</p></article>
+      <article><span class="number">02</span><h2>Revisit a reading</h2><p>List a folder’s PDFs, read the complete filenames and double-click to switch. The last page is remembered during the session.</p></article>
+      <article><span class="number">03</span><h2>Make room for discussion</h2><p>Point to details with a virtual laser. Set a timer for a discussion, activity or exam, with your faculty’s name and logo.</p></article>
+    </section>
+    <section class="getting-started" id="offline">
+      <div><p class="eyebrow">Ready for class</p><h2>Windows setup in three steps</h2><p>No separate Python installation is needed in the offline package. Keep the extracted folder together.</p></div>
+      <ol><li><strong>Download the offline Windows ZIP.</strong><span>On the GitHub release page, open Assets and choose the file ending in <code>Windows-x64-Offline.zip</code>. The automatically generated source-code files are for developers.</span></li><li><strong>Right-click → Extract All.</strong><span>Save it in Documents or another normal local folder.</span></li><li><strong>Open the folder and run <code>start-windows.bat</code>.</strong><span>Keep its small console window open while presenting. Select Open PDF, then Open audience window.</span></li></ol>
+    </section>
+    <section class="details"><h2>Use the material you already teach</h2><p>Export slides from PowerPoint, Keynote or Google Slides as PDF, or open an existing document. Beamer overlays work as separate PDF pages. PDF conversion removes animations, video and PowerPoint speaker notes.</p><p>On macOS or Linux, use the browser demo, or follow the source setup in the <a href="{{SOURCE_URL}}">project README</a>. The app requests no administrator rights, but managed-computer policies can still restrict local applications.</p></section>
+  </main>
+  <footer><span>Beamer PDF Presenter · Free and open source</span><span><a href="presenter/LICENSE.txt">Apache 2.0</a> · <a href="presenter/THIRD_PARTY_NOTICES.md">Third-party notices</a> · <a href="presenter/logos/SOURCES.md">Logo credits</a></span></footer>
+</body>
+</html>

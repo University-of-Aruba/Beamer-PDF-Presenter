@@ -1,0 +1,46 @@
+BEAMER PDF PRESENTER
+Offline Windows package · Intel/AMD Windows 10 or 11
+
+1. Download the file ending in Windows-x64-Offline.zip from GitHub Releases.
+   Choose that download, not the automatically generated Source code files.
+2. Right-click the ZIP -> Extract All. Save it in Documents or a normal folder.
+3. Open Beamer-PDF-Presenter and double-click start-windows.bat.
+   Keep its small console window open while presenting.
+
+No separate Python installation, internet connection or administrator rights
+are requested by this package. Work-laptop policies can still block local
+applications; ask IT if the computer reports a restriction.
+
+FIRST CLASS
+Select Open PDF. Then Open audience window, allow the pop-up, move it to the
+classroom screen and press F for full screen. Use Extend display mode so your
+private current/next preview stays on the laptop. Try Load demo before class.
+
+SWITCH MATERIAL
+Open PDF folder lists only PDFs directly in that folder. It does not open one.
+Double-click or double-tap a filename to open it. A single click leaves the
+current presentation unchanged. Keyboard: Tab to a filename, then Enter/Space.
+The last page is remembered during the folder session. Selected PDFs stay in
+the browser and are not uploaded. Reloading clears the folder and timer session.
+
+TEACHING TOOLS
+Laser pointer: turn it on, then move over the current-page preview.
+Countdown: set minutes/seconds, choose its display, then Start countdown.
+Brand: choose a faculty/program or the option without a logo. Add new PNGs to
+logos and press Refresh logos to include another faculty. Keep original files
+intact, because the startup check protects every packaged file.
+
+QUICK KEYS
+Right/Space = next page; Left = previous; B = blank/restore audience;
+L = laser; C = countdown start/pause; H = hide countdown; F = audience full screen.
+
+IF STARTUP FAILS
+Read the message in the console. Missing or changed file: extract a fresh ZIP
+into a new folder and keep all files together. Do not install Python separately.
+The renderer line should say PDF.js 6.3.289 (offline compatibility build).
+Unsupported browser or invalid PDF errors appear below the presenter controls.
+
+The application uses Apache License 2.0. Dependencies and brand marks have
+separate terms; LICENSE.txt, NOTICE, THIRD_PARTY_NOTICES.md and LICENSES contain
+the required notices and font source. Close the browser windows and console
+after the class. No uninstall step is needed for the portable folder.
