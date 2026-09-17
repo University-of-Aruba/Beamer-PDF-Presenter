@@ -21,8 +21,9 @@ APP_ROOT = Path(__file__).resolve().parents[1]
 WEB_FILES = (
     "index.html", "styles.css", "app.mjs", "countdown.mjs", "timer-view.mjs",
     "pdf-library.mjs", "pdf-activation.mjs", "laser-pointer.mjs", "branding.mjs",
-    "splitter.mjs", "sample-beamer.pdf", "VERSION", "assets/sisstem-gear.png",
-    "assets/README.md", "logos/README.md", "logos/SOURCES.md", *package.LICENSE_FILES,
+    "narration.mjs", "narration-player.mjs", "narration-controls.mjs", "narration-audience.mjs", "preview-render.mjs", "page-render-cache.mjs",
+    "sample-beamer.txt", "docs/NARRATION.md", "splitter.mjs", "sample-beamer.pdf", "VERSION",
+    "logos/README.md", "logos/SOURCES.md", *package.LICENSE_FILES,
 )
 CONTENT_POLICY = (
     "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; "

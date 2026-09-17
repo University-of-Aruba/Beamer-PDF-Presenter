@@ -143,3 +143,89 @@ test("untrusted filenames remain literal data and duplicate names are rejected",
   assert.equal((await result.entries[0].getFile()).name, literal);
   assert.throws(() => pdfEntriesFromFileList([file("one.pdf"), file("one.pdf")]), /duplicate filenames/);
 });
+
+
+test("native sidecars match exact stems with case-insensitive extensions and stay lazy", async () => {
+  const reads = [];
+  const pdf = file("Lecture 2.PDF");
+  const narration = file("Lecture 2.TxT");
+  const handle = (value) => ({ kind: "file", async getFile() { reads.push(value.name); return value; } });
+  const result = await readPdfDirectory(directory("Lectures", [
+    [pdf.name, handle(pdf)],
+    [narration.name, handle(narration)],
+    ["lecture 2.txt", handle(file("lecture 2.txt"))],
+    ["Lecture 2.pdf.txt", handle(file("Lecture 2.pdf.txt"))],
+    ["Lecture 2.txt.backup", handle(file("Lecture 2.txt.backup"))],
+    ["Archive", { kind: "directory", entries() { throw new Error("Must not recurse"); } }],
+    ["Lecture 3.pdf", handle(file("Lecture 3.pdf"))],
+    ["Lecture 3.txt", { kind: "directory", getFile() { throw new Error("Not a file"); } }],
+  ]));
+  assert.deepEqual(result.entries.map((entry) => entry.name), ["Lecture 2.PDF", "Lecture 3.pdf"]);
+  assert.deepEqual(reads, []);
+  assert.equal(await result.entries[0].getFile(), pdf);
+  assert.deepEqual(reads, [pdf.name]);
+  assert.equal(await result.entries[0].getNarrationFile(), narration);
+  assert.deepEqual(reads, [pdf.name, narration.name]);
+  assert.equal(await result.entries[1].getNarrationFile(), null);
+  assert.deepEqual(reads, [pdf.name, narration.name]);
+});
+
+test("native ambiguous or unreadable narration does not prevent a PDF from opening", async () => {
+  const pdf = file("Lecture.pdf");
+  let reads = 0;
+  const textHandle = { kind: "file", async getFile() { reads += 1; throw new Error("Permission denied"); } };
+  const result = await readPdfDirectory(directory("Lectures", [
+    [pdf.name, { kind: "file", async getFile() { return pdf; } }],
+    ["Lecture.txt", textHandle],
+    ["Lecture.TXT", textHandle],
+  ]));
+  assert.equal(await result.entries[0].getFile(), pdf);
+  await assert.rejects(result.entries[0].getNarrationFile(), /Multiple narration files match Lecture\.pdf/);
+  assert.equal(reads, 0);
+  const unreadable = await readPdfDirectory(directory("Lectures", [
+    [pdf.name, { kind: "file", async getFile() { return pdf; } }], ["Lecture.txt", textHandle],
+  ]));
+  assert.equal(await unreadable.entries[0].getFile(), pdf);
+  await assert.rejects(unreadable.entries[0].getNarrationFile(), /Permission denied/);
+  assert.equal(reads, 1);
+});
+
+test("fallback sidecars retain exact files without reading their text or nested siblings", async () => {
+  let reads = 0;
+  const pdf = file("deck.PDF");
+  const narration = { ...file("deck.TXT"), text() { reads += 1; throw new Error("Not needed for discovery"); } };
+  const result = pdfEntriesFromFileList([
+    pdf, narration, file("deck.txt", "Lectures/Archive/deck.txt"),
+    file("Deck.txt"), file("deck.pdf.txt"), file("deck.txt.backup"),
+    file("other.pdf"), file("other.txt", "Lectures/Archive/other.txt"),
+  ]);
+  assert.deepEqual(result.entries.map((entry) => entry.name), ["deck.PDF", "other.pdf"]);
+  assert.equal(reads, 0);
+  assert.equal(await result.entries[0].getFile(), pdf);
+  assert.equal(await result.entries[0].getNarrationFile(), narration);
+  assert.equal(await result.entries[1].getNarrationFile(), null);
+  assert.equal(reads, 0);
+});
+
+test("fallback ambiguity is reported only when narration is requested", async () => {
+  const pdf = file("deck.pdf");
+  const folder = pdfEntriesFromFileList([pdf, file("deck.txt"), file("deck.TXT")]);
+  assert.equal(folder.entries.length, 1);
+  assert.equal(await folder.entries[0].getFile(), pdf);
+  await assert.rejects(folder.entries[0].getNarrationFile(), /Multiple narration files match deck\.pdf.*deck\.txt, deck\.TXT/);
+});
+
+test("captured narration readers cannot switch to a later folder's matching filename", async () => {
+  const firstNarration = file("same.txt", "A/same.txt");
+  const secondNarration = file("same.txt", "B/same.txt");
+  const first = pdfEntriesFromFileList([file("same.pdf", "A/same.pdf"), firstNarration]);
+  const second = pdfEntriesFromFileList([file("same.pdf", "B/same.pdf"), secondNarration]);
+  const session = new PdfLibrarySession();
+  session.replace(first.name, first.entries);
+  const originalEntry = session.entries[0];
+  session.replace(second.name, second.entries);
+  assert.equal(await originalEntry.getNarrationFile(), firstNarration);
+  assert.equal(await session.entries[0].getNarrationFile(), secondNarration);
+  session.clear();
+  assert.equal(await originalEntry.getNarrationFile(), firstNarration);
+});

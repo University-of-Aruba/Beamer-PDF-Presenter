@@ -41,7 +41,7 @@ loss, when the audience is blanked, and while the full-screen timer is shown.
 Move onto the current slide again to resume. Press the button or L to turn it
 off. Coordinates use the bundled PDF.js canvas. Touch input does not activate it.
 
-## Select a faculty or program
+## Select a brand
 
 Place PNG logo files directly in `logos/`, then press **Refresh logos** and
 choose a **Brand** in the bottom controls. The filename supplies the uppercase
@@ -51,7 +51,7 @@ name: `sisstem.png` gives SISSTEM; `faculty_of_arts_and_science.png` and
 The selected name/logo appears in the presenter header and audience analog
 timer. Switching brands preserves the countdown and current PDF. The optional
 selection preference is saved in this browser; unavailable storage does not
-prevent use. **BEAMER PDF PRESENTER · no logo** is the generic choice. The supplied University of Aruba faculty and program assets are listed in
+prevent use. **BEAMER PDF PRESENTER · no logo** is the generic choice. The supplied University of Aruba logos are listed in
 [logo credits](../logos/SOURCES.md); other brands can be added as PNGs.
 
 Add custom logos under new filenames. In a portable package, replacing or
@@ -109,6 +109,32 @@ Hiding the timer, switching its display, changing the PDF page, blanking the scr
 
 Keep the presenter dashboard open. Closing/reloading it ends the session and clears the running countdown; this is not a persistent exam-management system. Configure the computer not to sleep during an exam. Sleep or background throttling may delay painting, but the next update recalculates time from the deadline. Changing the device's system clock can change the remaining time.
 
+## Narration and auto-play
+
+Keep a narration text file beside its PDF, with the same filename stem:
+`Lecture.pdf` and `Lecture.txt`. Open that folder, open the PDF, then press
+**Auto-play**. Browser access to a single PDF does not include adjacent files;
+use **Open narration** to select the text file in that case. **Load demo**
+includes the supplied `sample-beamer.txt` example.
+
+Playback starts at the current physical PDF page. **Pause narration** holds
+playback; **Continue** repeats the interrupted passage, up to 240 characters,
+and resumes. A scripted
+`[wait: ...]` remains on screen until Continue is pressed. Manual page changes
+stop narration. Blanking the audience or showing the full-screen timer pauses
+active narration, so an exercise can run before the PDF is restored.
+
+Expand **Voice settings and narration text** to select a local voice or change
+speed. Optional slides are included by default. Changing a setting stops
+playback; the next Auto-play starts at the current page. Speech comes from the
+lecturer's computer. Its audio output must be connected to classroom speakers
+if students are to hear it.
+
+The [narration guide](NARRATION.md) documents the script format, validation and
+voice availability. Narration uses installed local voices, so no TTS model or
+online speech service is required. The text remains readable when the browser
+has no local voice.
+
 ## Keyboard controls
 
 | Key | Action |
@@ -156,4 +182,4 @@ The existing renderer scope remains: no PDF transition effects or embedded audio
 
 ## Static hosting
 
-The app can be served as static files. Keep `index.html`, `styles.css`, **all application `.mjs` files**, `sample-beamer.pdf`, `assets/`, `logos/` (including its catalog), and a complete `vendor/` together. There is no database or application backend. Presenter and audience must use the same origin. HTTPS or localhost is preferable for browser capabilities. Publish an explicit static-file set, excluding `.git` and development files; do not expose the source checkout as a production website.
+The app can be served as static files. Keep `index.html`, `styles.css`, **all application `.mjs` files**, `sample-beamer.pdf`, `sample-beamer.txt`, `logos/` (including its catalog), and a complete `vendor/` together. There is no database or application backend. Presenter and audience must use the same origin. HTTPS or localhost is preferable for browser capabilities. Publish an explicit static-file set, excluding `.git` and development files; do not expose the source checkout as a production website.

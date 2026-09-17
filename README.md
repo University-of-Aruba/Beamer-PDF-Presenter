@@ -4,7 +4,9 @@ Beamer PDF Presenter is a free app for presenting PDFs with a private lecturer
 dashboard and a separate audience window. The dashboard shows the current and
 next page, with a PDF folder sidebar for revisiting other lectures. A virtual
 laser pointer helps direct attention to a detail on the audience screen.
-Built-in countdowns support timed classroom activities, with an option to show
+Optional narration reads a companion text file aloud with a local voice, following
+overlay reveals and pausing for classroom activities. Built-in countdowns
+support timed classroom activities, with an option to show
 a full-screen timer and faculty logo. The portable Windows package runs
 offline and keeps PDF documents on the lecturer’s computer.
 
@@ -20,6 +22,9 @@ offline and keeps PDF documents on the lecturer’s computer.
 - **Give students a visible countdown.** Keep a timer in a slide corner or
   switch to a full-screen dial for a timed activity. The lecturer’s elapsed
   teaching timer stays private.
+- **Play prepared narration.** Start at the current page, follow scripted
+  reveals and pause for discussion. Select an installed local voice and adjust
+  its speed. A Continue button resumes after an exercise.
 - **Use a faculty’s own identity.** Choose a supplied University of Aruba logo
   or add a PNG. Its filename supplies the name shown with the full-screen timer.
 - **Teach offline on Windows.** The portable download includes Python and the
@@ -34,9 +39,9 @@ only an ordinary PDF.
 ## Start with the offline Windows download
 
 The **Windows x64 Offline ZIP** is intended for Windows 10 or 11 laptops with
-an Intel or AMD processor. It includes Python and the PDF renderer, so the
-presenter can run it from its folder without a separate installation. Once the
-ZIP is downloaded, and it works offline.
+an Intel or AMD processor. It includes Python and the PDF renderer. Extract
+the ZIP and run the app from its folder without a separate installation.
+The extracted app works offline.
 
 For a published release, open this repository’s **Releases** section and choose the file named
 `Beamer-PDF-Presenter-<version>-Windows-x64-Offline.zip` under **Assets**.
@@ -63,6 +68,11 @@ available. The demo needs the internet to load.
 On macOS or Linux, follow the [source setup](docs/DEVELOPMENT.md#run-from-source)
 with an existing Python installation.
 
+To test recently pushed changes on Windows, download the build from the
+matching **Actions** run. Follow the
+[Windows test-build instructions](docs/GITHUB_SETUP.md#test-a-pushed-revision-on-windows);
+an existing release download keeps its original files.
+
 ## During a class
 
 To revisit material from an earlier lecture, select **Open PDF folder**. The
@@ -80,10 +90,15 @@ on the classroom screen.
 
 For a timed discussion, show a countdown in a corner of the slide or use the
 full-screen timer. The elapsed teaching timer remains private. Choose a
-University of Aruba faculty or program logo in the **Brand** control to
+University of Aruba logo in the **Brand** control to
 accompany the full-screen timer. A custom PNG can be added, or the logo can
 be turned off. The [logo instructions](logos/README.md) explain how filenames
 become the names displayed on screen.
+
+For spoken narration, keep a matching `.txt` script beside the PDF. Select
+**Open PDF folder**, double-click the PDF, then select **Auto-play**. For a
+PDF opened individually, attach its script with **Open narration**. **Load demo** includes a narrated example.
+The [narration guide](docs/NARRATION.md) explains the text format and local voices.
 
 The [lecturer guide](docs/USER_GUIDE.md) walks through the controls and includes
 keyboard shortcuts. Keep the dashboard open throughout the class; closing or
@@ -121,8 +136,9 @@ The [GitHub setup guide](docs/GITHUB_SETUP.md) explains how to publish the
 Windows download and enable the Pages demo.
 
 Changes are recorded in the [changelog](CHANGELOG.md). The
-[distribution validation record](DISTRIBUTION_VALIDATION.md) lists the package
-checks and their outcomes. For a security concern, follow the
+[September 9 distribution validation record](DISTRIBUTION_VALIDATION.md)
+preserves the package checks and outcomes from that preparation. Current
+checks appear in the Actions run for each pushed revision. For a security concern, follow the
 [security reporting guidance](SECURITY.md).
 
 ## License and acknowledgements
@@ -137,5 +153,5 @@ University of Aruba names and logos retain their owners’ rights and are
 separate from the software license. The [logo credits](logos/SOURCES.md)
 identify the official sources.
 
-The unreleased development version remains **1.1.0** until a release version
-is chosen.
+Version **1.2.0** adds offline narration and prepares upcoming reveals. See the
+[1.2.0 release notes](docs/releases/v1.2.0.md) for the changes and download guidance.

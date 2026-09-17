@@ -45,11 +45,12 @@ class PackageSourceTests(unittest.TestCase):
             self.skipTest("This platform does not permit fixture symlinks.")
 
     def test_required_feature_modules_and_default_brand_are_copied(self) -> None:
-        """Include every new browser import and preserve the bundled default logo."""
+        """Include browser imports, sample narration and the default logo provenance."""
         builder.copy_source(self.destination)
         for name in (
             "pdf-library.mjs", "pdf-activation.mjs", "laser-pointer.mjs", "branding.mjs",
-            "logos/sisstem.png", "logos/README.md", "assets/sisstem-gear.png",
+            "narration.mjs", "narration-player.mjs", "narration-controls.mjs", "narration-audience.mjs", "preview-render.mjs", "page-render-cache.mjs", "sample-beamer.txt",
+            "logos/sisstem.png", "logos/README.md", "logos/SOURCES.md",
         ):
             self.assertEqual((self.destination / name).read_bytes(), (self.root / name).read_bytes())
         self.assertEqual(

@@ -1,14 +1,57 @@
 # Changelog
 
-## Distribution preparation (unreleased)
+## 1.2.0
+
+Version 1.2.0 adds optional offline narration to PDF presentations. It is a
+minor release because narration adds functionality while preserving existing
+presentation controls and PDF workflows.
+
+### Added
+
+- Play a companion text script with an installed local browser voice, starting
+  at the current PDF page. Follow the text in the lecturer's dashboard.
+- Read `math1-narration-v1` scripts with PDF identity checks, overlay reveals,
+  timed pauses and manual Continue points. Select the voice and speed, and
+  choose whether to include optional slides.
+- Find the matching script when opening a PDF from its folder, or attach a
+  script with Open narration. Include the narrated `sample-beamer.txt` demo
+  in the offline package and website build.
+- Add the University of Aruba Research Center logo to the Brand selector and
+  full-screen countdown, with the full center name displayed.
+
+### Improved
+
+- Keep reveal captions silent. Explicit `[cue: ...]` instructions remain
+  spoken. Scripted pauses and Continue points retain their timing.
+- Read adjacent cues and narration in bounded passages to reduce voice
+  restarts between sentences. Prepare the next PDF page on both displays
+  and reuse its render when the reveal is shown.
+- Begin narration after the current presenter and audience pages are ready;
+  the next-page preview renders separately.
+- Stop narration on manual navigation. Pause it when blanking the audience
+  or showing the full-screen timer.
+- Explain how to obtain a Windows test package from the Actions run for the
+  pushed commit, including both ZIP extraction steps and local-voice checks.
+- Remove the unused duplicate SISSTEM image from package inventories and
+  consolidate its provenance in the logo credits.
+
+Local voice availability and speech timing depend on the operating system and
+browser. Check the selected voice and classroom audio output before class.
+
+## Earlier local preparation
+
+The following records describe work prepared while the application version
+was 1.1.0. They are retained as development history.
+
+### Distribution preparation
 
 - Rename the app and portable folder to Beamer PDF Presenter; lead documentation with classroom use across disciplines and a three-step Windows startup.
 - Prepare validated CI, downloadable offline Windows build artifacts and a manual GitHub Pages demo with a welcome/download page.
 - Add the four University of Aruba faculty marks and additional program marks from official sources, with catalog entries and attribution.
 - Apply Apache 2.0 to the updated application; retain original MIT and dependency notices, including compatibility-build MIT notices and the Liberation font source archive.
-- Preserve VERSION 1.1.0. No remote repository, commit, push, tag, Pages deployment or GitHub Release is created by this local preparation.
+- Keep VERSION at 1.1.0 during this preparation.
 
-## Local PDF Presenter additions (unreleased)
+### Local PDF Presenter additions
 
 - Add a left PDF-folder sidebar with immediate-PDF filtering, wrapped filenames and session page restoration. Browser folder selection supplies explicit access.
 - Group Open PDF and Open PDF folder; selecting a folder does not open a PDF. Require a double-click, double-tap or explicit keyboard activation for listed files.
@@ -18,9 +61,10 @@
 - Generalize the visible application name to PDF Presenter and add selectable PNG branding from `logos/`. Names derive from filenames; branding changes preserve timer state.
 - Keep rapid document switching ordered, including delayed demo loads, and extend offline packaging to the new modules and safe logo assets.
 
-The existing Drive delivery is unchanged. These additive features merit a future minor release (1.2.0); VERSION remains 1.1.0 pending release approval.
+These additions were initially recorded under version 1.1.0, with a minor
+release recommended for the added functionality.
 
-## Local offline Windows bundle
+### Local offline Windows bundle
 
 - Include a pinned, unmodified Python 3.14.7 embeddable Windows x64 runtime and complete PDF.js 6.3.289 assets in a portable ZIP.
 - Start through the bundled runtime with extraction/integrity checks and clear recovery messages.
@@ -29,18 +73,19 @@ The existing Drive delivery is unchanged. These additive features merit a future
 - Add deterministic package assembly, source/dependency provenance, license retention, ZIP readback and checksums.
 - Restrict local HTTP resource connections and block access to bundled executables and private package metadata.
 
-The app's `VERSION` remains 1.1.0. The Windows bundle records its exact source commit and per-file hashes; no public release or hosted service is implied.
+This bundle was prepared under version 1.1.0. Its manifest records the exact
+source commit and per-file hashes.
 
-## Local SISSTEM adaptation (unreleased)
+### Local SISSTEM adaptation
 
 - Preserve the imported 1.1.0 application in a local Git repository.
 - Apply a dark SISSTEM teal/cream theme and the existing gear logo to the header, favicon and full-screen analog countdown.
 - Prevent the local server from exposing hidden paths such as the new `.git` history, directory listings or resolved paths outside the application folder.
 - Document managed-computer installation findings and separate new validation evidence from the imported record.
 
-The application version remains 1.1.0. This local adaptation has not been deployed or published as a new release.
+This adaptation kept the application version at 1.1.0.
 
-## 1.1.0
+## 1.1.0 (imported Beamer Presenter release)
 
 ### Added
 

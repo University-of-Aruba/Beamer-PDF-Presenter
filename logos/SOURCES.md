@@ -1,9 +1,10 @@
 # University of Aruba logo sources
 
-Retrieved and visually checked on 2026-09-09. These PNG files are unchanged
-copies of artwork served by the University of Aruba website. Filenames were
-chosen for the presenter's automatic brand labels; the PNG bytes were not
-resized, recolored, cropped, or regenerated.
+The faculty and program downloads below were retrieved and visually checked
+on 2026-09-09. They are unchanged copies of artwork served by the University
+of Aruba website. The Research Center logo was supplied separately, as recorded
+below. Filenames provide the presenter's automatic brand labels; the PNG artwork
+is preserved without modification.
 
 ## Faculty coverage
 
@@ -99,6 +100,19 @@ on high-resolution projectors. FEF has a 1193-pixel original.
 
 ## Existing SISSTEM asset
 
-`sisstem.png` is the supplied, unchanged gear-and-leaf mark already used in the
-application. Its existing provenance is recorded in [assets/README.md](../assets/README.md).
+`sisstem.png` is an unchanged copy of the supplied University of Aruba SISSTEM
+course artwork. It is used in the presenter header, browser favicon and
+full-screen analog countdown, including its private presenter preview.
 SHA-256: `14f9b8ca2f0f41347129da408760827af3c10d561cb40691c5459518318526d9`.
+
+The interface palette is derived from the supplied artwork: teal `#009ca6`, deep teal `#006b6f`, and cream `#efe4bc`. Dark teal surfaces and lighter teal `#64d6d6` adapt those colors for readable controls and text. These are application design choices based on the logo, not a verified official brand guide. Amber and red retain their countdown warning and completion meanings.
+
+## University of Aruba Research Center asset
+
+Supplied by Francis Laclé on 2026-09-16 as `logo-v2.png` for inclusion in a
+future release. The original PNG is copied unchanged.
+
+- Presenter filename: `university_of_aruba_research_center.png`.
+- Display name: UNIVERSITY OF ARUBA RESEARCH CENTER.
+- Dimensions: 2990 × 2990 pixels; 236,582 bytes.
+- SHA-256: `a52d2e3394d035dd1e261d36981b0c6e72e53c414c2d47e4f1932ed6f373f56c`.

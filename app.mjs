@@ -6,6 +6,10 @@ import { PresenterPointer, LaserOverlay, isLaserPoint } from "./laser-pointer.mj
 import { DEFAULT_BRAND_FILENAME, brandDetails, loadBrandCatalog } from "./branding.mjs";
 import { PdfLibrarySession, pdfEntriesFromFileList } from "./pdf-library.mjs";
 import { bindPdfActivation } from "./pdf-activation.mjs";
+import { NarrationControls } from "./narration-controls.mjs";
+import { NarrationAudience } from "./narration-audience.mjs";
+import { settlePreviewRenders } from "./preview-render.mjs";
+import { PageRenderCache } from "./page-render-cache.mjs";
 
 const PDFJS_VERSION = "6.3.289";
 const MAX_RENDER_PIXEL_RATIO = 2;
@@ -168,7 +172,8 @@ class PdfJsRenderer {
     this.loadingTask = null;
     this.document = null;
     this.renderIds = new WeakMap();
-    this.renderTasks = new Map();
+    this.surfaceCaches = new WeakMap();
+    this.renderCaches = new Set();
   }
 
   async load(pdfUrl) {
@@ -193,89 +198,75 @@ class PdfJsRenderer {
     return this.document.numPages;
   }
 
-  async render(surface, pageNumber) {
-    if (!this.document) {
-      throw new Error("PDF document is not loaded.");
-    }
-
-    const renderId = (this.renderIds.get(surface) || 0) + 1;
-    this.renderIds.set(surface, renderId);
-
-    const previousTask = this.renderTasks.get(surface);
-    if (previousTask) {
-      try {
-        previousTask.cancel();
-      } catch {
-        // A completed task does not need cancellation.
-      }
-    }
-
-    const page = await this.document.getPage(pageNumber);
-    if (this.renderIds.get(surface) !== renderId) {
-      return;
-    }
-
-    const baseViewport = page.getViewport({ scale: 1 });
+  raster(surface, pageNumber) {
+    if (!this.document) return Promise.reject(new Error("PDF document is not loaded."));
+    const loadedDocument = this.document;
+    const pdfUrl = this.pdfUrl;
     const width = Math.max(surface.clientWidth - 2, 1);
     const height = Math.max(surface.clientHeight - 2, 1);
-    const cssScale = Math.max(Math.min(width / baseViewport.width, height / baseViewport.height), 0.01);
     const pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_RENDER_PIXEL_RATIO);
-    const renderViewport = page.getViewport({ scale: cssScale * pixelRatio });
-
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.max(Math.floor(renderViewport.width), 1);
-    canvas.height = Math.max(Math.floor(renderViewport.height), 1);
-    canvas.style.width = `${renderViewport.width / pixelRatio}px`;
-    canvas.style.height = `${renderViewport.height / pixelRatio}px`;
-    canvas.setAttribute("aria-label", `PDF page ${pageNumber}`);
-
-    const context = canvas.getContext("2d", { alpha: false });
-    if (!context) {
-      throw new Error("Canvas rendering is unavailable in this browser.");
+    let cache = this.surfaceCaches.get(surface);
+    if (!cache) {
+      // One displayed page and one prepared page at this surface's resolution.
+      cache = new PageRenderCache(2);
+      this.surfaceCaches.set(surface, cache);
+      this.renderCaches.add(cache);
     }
-
-    const loadedDocument = this.document;
-    const renderTask = page.render({
-      canvasContext: context,
-      viewport: renderViewport,
-      background: "rgb(255,255,255)",
-    });
-    this.renderTasks.set(surface, renderTask);
-
-    try {
+    const key = `${pageNumber}:${width}:${height}:${pixelRatio}`;
+    return cache.get(key, async controls => {
+      const page = await loadedDocument.getPage(pageNumber);
+      if (!controls.isActive() || this.document !== loadedDocument) return null;
+      const baseViewport = page.getViewport({ scale: 1 });
+      const cssScale = Math.max(Math.min(width / baseViewport.width, height / baseViewport.height), 0.01);
+      const renderViewport = page.getViewport({ scale: cssScale * pixelRatio });
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.max(Math.floor(renderViewport.width), 1);
+      canvas.height = Math.max(Math.floor(renderViewport.height), 1);
+      canvas.style.width = `${renderViewport.width / pixelRatio}px`;
+      canvas.style.height = `${renderViewport.height / pixelRatio}px`;
+      canvas.setAttribute("aria-label", `PDF page ${pageNumber}`);
+      const context = canvas.getContext("2d", { alpha: false });
+      if (!context) throw new Error("Canvas rendering is unavailable in this browser.");
+      const renderTask = page.render({
+        canvasContext: context,
+        viewport: renderViewport,
+        background: "rgb(255,255,255)",
+      });
+      controls.onCancel(() => renderTask.cancel());
       await renderTask.promise;
-      if (this.document === loadedDocument && this.renderIds.get(surface) === renderId) {
-        surface.dataset.pdfAspect = String(baseViewport.width / baseViewport.height);
-        surface.dataset.renderedPage = String(pageNumber);
-        surface.dataset.renderedDocument = this.pdfUrl;
-        surface.replaceChildren(canvas);
-      }
-    } catch (error) {
-      if (error?.name !== "RenderingCancelledException") {
-        throw error;
-      }
-    } finally {
-      if (this.renderTasks.get(surface) === renderTask) {
-        this.renderTasks.delete(surface);
-      }
+      return { canvas, aspect: baseViewport.width / baseViewport.height, loadedDocument, pdfUrl };
+    });
+  }
+
+  async render(surface, pageNumber) {
+    const renderId = (this.renderIds.get(surface) || 0) + 1;
+    this.renderIds.set(surface, renderId);
+    const result = await this.raster(surface, pageNumber);
+    if (result && this.document === result.loadedDocument && this.renderIds.get(surface) === renderId) {
+      surface.dataset.pdfAspect = String(result.aspect);
+      surface.dataset.renderedPage = String(pageNumber);
+      surface.dataset.renderedDocument = result.pdfUrl;
+      if (surface.firstElementChild !== result.canvas) surface.replaceChildren(result.canvas);
     }
+  }
+
+  prepare(surface, pageNumber) {
+    if (!this.document || pageNumber > this.document.numPages) return;
+    // A failed preparation is removed from the cache. Visible navigation retries
+    // it through render(), where its failure can be reported to the lecturer.
+    this.raster(surface, pageNumber).catch(() => {});
   }
 
   cancel(surface) {
     this.renderIds.set(surface, (this.renderIds.get(surface) || 0) + 1);
-    this.renderTasks.get(surface)?.cancel();
-    this.renderTasks.delete(surface);
+    this.surfaceCaches.get(surface)?.clear();
   }
 
   async destroy() {
     this.document = null;
-    for (const task of this.renderTasks.values?.() || []) {
-      try {
-        task.cancel();
-      } catch {
-        // Ignore cancellation failures during teardown.
-      }
-    }
+    for (const cache of this.renderCaches) cache.clear();
+    this.renderCaches.clear();
+    this.surfaceCaches = new WeakMap();
     if (this.loadingTask?.destroy) {
       try {
         await this.loadingTask.destroy();
@@ -505,9 +496,23 @@ function initialisePresenter() {
   elements.brandSelect.addEventListener("change", () => applyBrand(elements.brandSelect.value || null));
   elements.refreshBrands.addEventListener("click", () => refreshBrands());
   refreshBrands(true);
+  const narrationAudience = new NarrationAudience({
+    send: sendToAudience,
+    isConnected: () => Boolean(getAudiencePeer()),
+    getContext: () => ({ pdfUrl: state.pdfUrl, currentPage: state.currentPage }),
+  });
+  const narration = new NarrationControls(presenterApp, {
+    onCancel: () => narrationAudience.cancel(),
+    getPage: () => state.currentPage,
+    isAvailable: () => Boolean(state.renderer) && !state.loading,
+    isVisible: () => !state.blanked && state.countdown.mode !== "analog",
+    navigate: async page => {
+      const results = await Promise.all([goToPage(page, false, true), narrationAudience.request(page)]);
+      if (!results[0]) throw new Error("The current page could not finish rendering. Press Auto-play to retry.");
+    },
+  });
   const library = new PdfLibrarySession();
   let folderSelectionGeneration = 0;
-
   const timerState = {
     running: false,
     accumulatedMs: 0,
@@ -585,38 +590,41 @@ function initialisePresenter() {
     elements.laserButton.title = state.rendererKind === "native" ? "The laser pointer requires the bundled PDF.js renderer."
       : "Toggle the laser pointer, then move over the current slide (L).";
     pointer.refresh();
+    narration.render();
   }
 
-  async function renderPresenterSurfaces() {
+  async function renderPresenterSurfaces({ waitForNext = true } = {}) {
     if (!state.renderer) {
       refreshControlState();
-      return;
+      return false;
     }
 
     const generation = ++state.renderGeneration;
+    const renderer = state.renderer;
+    const page = state.currentPage;
+    const pdfUrl = state.pdfUrl;
     refreshControlState();
 
-    const tasks = [
-      state.renderer.render(elements.currentSurface, state.currentPage),
-    ];
-
-    const hasNextPage = state.totalPages === null || state.currentPage < state.totalPages;
+    const current = renderer.render(elements.currentSurface, page);
+    let next = null;
+    const hasNextPage = state.totalPages === null || page < state.totalPages;
     if (hasNextPage) {
-      tasks.push(state.renderer.render(elements.nextSurface, state.currentPage + 1));
+      next = renderer.render(elements.nextSurface, page + 1);
     } else {
-      state.renderer.cancel?.(elements.nextSurface);
+      renderer.cancel?.(elements.nextSurface);
       showEndCard(elements.nextSurface);
     }
 
-    const results = await Promise.allSettled(tasks);
-    if (generation !== state.renderGeneration) {
-      return;
-    }
-
-    const failure = results.find((result) => result.status === "rejected");
-    if (failure) {
-      showToast(`A page could not be rendered: ${formatError(failure.reason)}`, "error", 7000);
-    }
+    const ready = await settlePreviewRenders(current, next, {
+      waitForNext,
+      isCurrent: () => generation === state.renderGeneration && renderer === state.renderer
+        && page === state.currentPage && pdfUrl === state.pdfUrl,
+      isCurrentRendered: () => elements.currentSurface.dataset.renderedPage === String(page)
+        && elements.currentSurface.dataset.renderedDocument === pdfUrl,
+      onError: error => showToast(`A page could not be rendered: ${formatError(error)}`, "error", 7000),
+    });
+    if (ready && hasNextPage) renderer.prepare(elements.currentSurface, page + 1);
+    return ready;
   }
 
   function scheduleSurfaceRender() {
@@ -674,6 +682,7 @@ function initialisePresenter() {
   }
 
   async function openLibraryEntry(entry) {
+    narration.stop();
     const generation = ++state.loadGeneration;
     pointer.reset();
     state.loading = true;
@@ -681,7 +690,7 @@ function initialisePresenter() {
     try {
       const file = await entry.getFile();
       if (generation !== state.loadGeneration || !library.entryFor(entry.id)) return;
-      await loadPdfFile(file, { generation, entryId: entry.id });
+      await loadPdfFile(file, { generation, entryId: entry.id, getNarrationFile: entry.getNarrationFile });
     } catch (error) {
       if (generation === state.loadGeneration) {
         state.loading = false;
@@ -718,12 +727,13 @@ function initialisePresenter() {
     elements.fileInput.click();
   }
 
-  async function loadPdfFile(file, { generation = ++state.loadGeneration, entryId = null } = {}) {
+  async function loadPdfFile(file, { generation = ++state.loadGeneration, entryId = null, getNarrationFile = null } = {}) {
     if (generation !== state.loadGeneration) return;
     if (!file || !(file.type === "application/pdf" || file.name?.toLowerCase().endsWith(".pdf"))) {
       showToast("Select a PDF file.", "error");
       return;
     }
+    narration.stop();
     pointer.reset();
     state.loading = true;
     refreshControlState();
@@ -760,6 +770,7 @@ function initialisePresenter() {
       elements.deckName.textContent = file.name;
       elements.rendererLabel.textContent = `Renderer: ${rendererResult.renderer.label}`;
       document.title = `${file.name} · Beamer PDF Presenter`;
+      narration.bind(file, state.totalPages, getNarrationFile);
       // Announce the new deck immediately; later navigation must not be overwritten
       // by a delayed completion of an older render.
       sendFullAudienceState();
@@ -784,6 +795,7 @@ function initialisePresenter() {
   }
 
   async function loadDemo() {
+    narration.stop();
     const generation = ++state.loadGeneration;
     try {
       elements.loadDemoButton.disabled = true;
@@ -793,7 +805,11 @@ function initialisePresenter() {
       }
       const blob = await response.blob();
       const file = new File([blob], "sample-beamer.pdf", { type: "application/pdf" });
-      await loadPdfFile(file, { generation });
+      await loadPdfFile(file, { generation, getNarrationFile: async () => {
+        const textResponse = await fetch("./sample-beamer.txt", { cache: "no-store" });
+        if (!textResponse.ok) throw new Error("The sample narration file is missing from this copy of the app.");
+        return new File([await textResponse.blob()], "sample-beamer.txt", { type: "text/plain" });
+      } });
     } catch (error) {
       if (generation === state.loadGeneration) {
         state.loading = false;
@@ -820,7 +836,8 @@ function initialisePresenter() {
     });
   }
 
-  function goToPage(requestedPage, announce = true) {
+  function goToPage(requestedPage, announce = true, fromNarration = false) {
+    if (!fromNarration) narration.stop();
     if (!state.renderer || state.loading) {
       return;
     }
@@ -835,16 +852,17 @@ function initialisePresenter() {
     const nextPage = clamp(parsed, 1, maximum);
     if (nextPage === state.currentPage) {
       refreshControlState();
-      return;
+      return fromNarration ? renderPresenterSurfaces({ waitForNext: false }) : true;
     }
 
     pointer.reset();
     state.currentPage = nextPage;
     library.rememberPage(nextPage);
-    renderPresenterSurfaces();
+    const rendered = renderPresenterSurfaces({ waitForNext: !fromNarration });
     if (announce) {
       sendToAudience({ type: "goto", pdfUrl: state.pdfUrl, currentPage: state.currentPage });
     }
+    return rendered;
   }
 
   function toggleBlank(announce = true) {
@@ -853,6 +871,7 @@ function initialisePresenter() {
     }
     pointer.reset();
     state.blanked = !state.blanked;
+    if (state.blanked) narration.pause();
     refreshControlState();
     if (announce) {
       sendToAudience({ type: "blank", blanked: state.blanked });
@@ -1045,10 +1064,15 @@ function initialisePresenter() {
         }
         break;
       case "audience-loaded":
+        narrationAudience.resend();
         state.audienceLastSeenAt = Date.now();
         refreshConnectionStatus();
         break;
+      case "audience-page-rendered":
+        narrationAudience.receive(message);
+        break;
       case "audience-closing":
+        narrationAudience.cancel();
         state.audienceLastSeenAt = 0;
         refreshConnectionStatus();
         break;
@@ -1074,6 +1098,7 @@ function initialisePresenter() {
   elements.countdownDisplay.addEventListener("change", () => {
     changeCountdown({ type: "mode", mode: elements.countdownDisplay.value });
     const mode = state.countdown.mode;
+    if (mode === "analog") narration.pause();
     countdownFeedback(mode === "analog"
       ? "Analog countdown replaces the audience PDF. Hide timer restores the current page."
       : mode === "corner" && !state.renderer
@@ -1133,8 +1158,8 @@ function initialisePresenter() {
 
   window.addEventListener("keydown", (event) => {
     if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey
-        || isEditableTarget(event.target) || event.target?.closest?.('[role="separator"]')
-        || (["Enter", " "].includes(event.key) && event.target?.closest?.("button, a"))) {
+        || isEditableTarget(event.target) || event.target?.closest?.('[role="separator"], #narration-text')
+        || (["Enter", " "].includes(event.key) && event.target?.closest?.("button, a, summary"))) {
       return;
     }
 
@@ -1232,6 +1257,7 @@ function initialisePresenter() {
   surfaceResizeObserver.observe(elements.nextSurface);
 
   window.addEventListener("beforeunload", () => {
+    narration.destroy();
     pointer.destroy();
     countdownView.destroy();
     bus.close();
@@ -1350,15 +1376,25 @@ function initialiseAudience() {
       return;
     }
     updateIndicator();
+    const page = state.currentPage;
+    const pdfUrl = state.pdfUrl;
     try {
-      await state.renderer.render(elements.surface, state.currentPage);
+      const renderer = state.renderer;
+      await renderer.render(elements.surface, page);
+      const ready = renderer === state.renderer && page === state.currentPage && pdfUrl === state.pdfUrl
+        && elements.surface.dataset.renderedPage === String(page)
+        && elements.surface.dataset.renderedDocument === pdfUrl;
+      if (ready && page < state.totalPages) renderer.prepare(elements.surface, page + 1);
+      return ready;
     } catch (error) {
+      if (page !== state.currentPage || pdfUrl !== state.pdfUrl) return false;
       showSurfaceMessage(
         elements.surface,
         "Page rendering failed",
         formatError(error),
         "render-error",
       );
+      return false;
     }
   }
 
@@ -1429,7 +1465,7 @@ function initialiseAudience() {
     });
   }
 
-  function goToAudiencePage(pageNumber) {
+  async function goToAudiencePage(pageNumber, narrationRequest = null) {
     const parsed = Number.parseInt(String(pageNumber), 10);
     if (!Number.isFinite(parsed)) {
       return;
@@ -1437,7 +1473,14 @@ function initialiseAudience() {
     const maximum = state.totalPages ?? Number.POSITIVE_INFINITY;
     laser.hide();
     state.currentPage = clamp(parsed, 1, maximum);
-    renderAudiencePage();
+    const pdfUrl = state.pdfUrl;
+    const currentPage = state.currentPage;
+    // A loading audience will receive this request again after audience-loaded.
+    if (state.loading) return;
+    const ok = await renderAudiencePage();
+    if (Number.isSafeInteger(narrationRequest)) {
+      sendToPresenter({ type: "audience-page-rendered", narrationRequest, pdfUrl, currentPage, ok: Boolean(ok) });
+    }
   }
 
   async function toggleFullscreen() {
@@ -1480,7 +1523,7 @@ function initialiseAudience() {
         applyLaser(message);
         break;
       case "goto":
-        if (message.pdfUrl === state.pdfUrl) goToAudiencePage(message.currentPage);
+        if (message.pdfUrl === state.pdfUrl) goToAudiencePage(message.currentPage, message.narrationRequest);
         break;
       case "blank":
         applyBlank(message.blanked);

@@ -867,3 +867,20 @@ select:focus-visible, [role="separator"]:focus-visible {
 @media (max-width:760px) { .brand-label { max-width: 70vw; } }
 
 .pdf-load-error { grid-column: 1 / -1; color: #ffb7b7; font-size: .8rem; line-height: 1.5; overflow-wrap: anywhere; }
+
+/* Narration remains private and its transcript is readable without speech. */
+.narration-controls { grid-column: 1 / -1; border-top: 1px solid var(--line); padding-top: 10px; min-width: 0; }
+.narration-row, .narration-options { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.narration-row h2 { font-size: .82rem; }
+#narration-status { font-size: .72rem; color: var(--muted); overflow-wrap: anywhere; }
+#narration-status[data-phase="waiting"], #narration-status[data-phase="paused"] { color: var(--warning); }
+#narration-status[data-error="true"] { color: var(--danger); }
+#narration-settings { margin-top: 7px; font-size: .73rem; }
+#narration-settings summary { cursor: pointer; color: var(--accent); width: fit-content; }
+.narration-options { margin: 10px 0 6px; }
+.narration-options .select-field { max-width: 100%; }
+.narration-options select { max-width: min(300px, 65vw); }
+.narration-checkbox { display: flex; align-items: center; gap: 5px; }
+#narration-voice-help { color: var(--muted); line-height: 1.5; }
+.narration-text { max-height: 6em; overflow-y: auto; white-space: pre-wrap; overflow-wrap: anywhere; margin-top: 7px; line-height: 1.5; }
+summary:focus-visible, select:focus-visible, .narration-text:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }

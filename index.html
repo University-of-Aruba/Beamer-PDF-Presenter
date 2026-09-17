@@ -13,7 +13,7 @@
     <header class="topbar">
       <div class="brand-block">
         <img id="brand-mark" class="brand-mark" src="logos/sisstem.png" alt="" width="42" height="42">
-        <div><h1>Beamer PDF Presenter <span class="version-label">1.1</span> <span id="brand-label" class="brand-label">SISSTEM</span></h1><p id="deck-name" class="deck-name">No PDF loaded</p></div>
+        <div><h1>Beamer PDF Presenter <span class="version-label">1.2.0</span> <span id="brand-label" class="brand-label">SISSTEM</span></h1><p id="deck-name" class="deck-name">No PDF loaded</p></div>
       </div>
       <div class="topbar-actions">
         <div id="connection-status" class="status-pill" role="status" aria-live="polite">
@@ -110,6 +110,28 @@
           <button id="countdown-hide-button" class="text-button" type="button" disabled title="Hide the countdown without stopping it (H)">Hide timer / return to PDF</button>
         </div>
         <p id="countdown-feedback" class="countdown-feedback" role="status">Set a duration, choose a display, then start. Hiding the timer does not stop it.</p>
+      </section>
+
+      <section class="narration-controls" aria-labelledby="narration-heading">
+        <div class="narration-row">
+          <h2 id="narration-heading">Narration</h2>
+          <button id="narration-play" class="button button-primary" type="button" disabled>Auto-play</button>
+          <button id="narration-stop" class="button button-secondary" type="button" disabled>Stop</button>
+          <button id="narration-open" class="button button-secondary" type="button" disabled>Open narration</button>
+          <span id="narration-status" role="status">Open a PDF to use narration.</span>
+        </div>
+        <details id="narration-settings">
+          <summary>Voice settings and narration text</summary>
+          <div class="narration-options">
+            <label class="select-field"><span>Local voice</span><select id="narration-voice" aria-describedby="narration-voice-help"></select></label>
+            <button id="narration-refresh" class="text-button" type="button">Refresh voices</button>
+            <label class="select-field"><span>Speed</span><select id="narration-rate"><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option></select></label>
+            <label class="narration-checkbox"><input id="narration-optional" type="checkbox" checked> Include optional slides</label>
+          </div>
+          <p id="narration-voice-help"></p>
+          <p id="narration-text" class="narration-text" tabindex="0" aria-label="Current narration or instruction"></p>
+        </details>
+        <input id="narration-input" type="file" accept="text/plain,.txt" hidden>
       </section>
 
       <div class="brand-controls"><label class="select-field"><span>Brand</span><select id="brand-select" aria-describedby="brand-help"><option value="sisstem.png">SISSTEM</option><option value="">BEAMER PDF PRESENTER · no logo</option></select></label><button id="refresh-brands-button" class="text-button" type="button">Refresh logos</button><span id="brand-help" class="section-hint">PNG files in the logos folder</span></div>

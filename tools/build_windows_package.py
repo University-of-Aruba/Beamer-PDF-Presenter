@@ -25,9 +25,10 @@ LICENSE_FILES = (
 SOURCE_FILES = (
     "index.html", "styles.css", "app.mjs", "countdown.mjs", "timer-view.mjs",
     "pdf-library.mjs", "pdf-activation.mjs", "laser-pointer.mjs", "branding.mjs",
-    "splitter.mjs", "sample-beamer.pdf", "serve.py", "launch_windows.py",
+    "narration.mjs", "narration-player.mjs", "narration-controls.mjs", "narration-audience.mjs", "preview-render.mjs", "page-render-cache.mjs",
+    "sample-beamer.txt", "docs/NARRATION.md", "splitter.mjs", "sample-beamer.pdf", "serve.py", "launch_windows.py",
     "start-windows.bat", "START HERE.txt", "VERSION", *LICENSE_FILES,
-    "dependencies.lock.json", "assets/sisstem-gear.png",
+    "dependencies.lock.json",
     "logos/sisstem.png", "logos/README.md", "logos/SOURCES.md",
 )
 WINDOWS_RESERVED_NAMES = frozenset(
@@ -157,12 +158,6 @@ def copy_source(destination: Path) -> None:
         shutil.copyfile(source, target)
     (destination / "logos/catalog.json").write_text(
         json.dumps({"filenames": [Path(name).name for name in logos]}, indent=2) + "\n", encoding="utf-8"
-    )
-    # Keep redistribution provenance while omitting personal workstation paths.
-    (destination / "assets/README.md").write_text(
-        "# SISSTEM logo\n\nUnmodified University of Aruba SISSTEM gear-and-leaf "
-        "course asset. Its owner's rights are separate from the app's Apache-2.0 license.\n\n"
-        f"SHA-256: {sha256(destination / 'assets/sisstem-gear.png')}\n", encoding="utf-8"
     )
 
 

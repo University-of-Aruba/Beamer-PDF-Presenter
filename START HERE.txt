@@ -1,4 +1,4 @@
-BEAMER PDF PRESENTER
+BEAMER PDF PRESENTER 1.2.0
 Offline Windows package · Intel/AMD Windows 10 or 11
 
 1. Download the file ending in Windows-x64-Offline.zip from GitHub Releases.
@@ -29,6 +29,21 @@ Countdown: set minutes/seconds, choose its display, then Start countdown.
 Brand: choose a faculty/program or the option without a logo. Add new PNGs to
 logos and press Refresh logos to include another faculty. Keep original files
 intact, because the startup check protects every packaged file.
+
+NARRATION
+Try Load demo, then Auto-play. Speech uses an installed local voice; expand
+Voice settings and narration text to choose the voice and speed. If no voice
+appears, press Refresh voices or try another approved browser. OS voice
+installation may need an initial download or IT approval.
+
+For a lecture, keep Lecture.pdf and Lecture.txt together. Use Open PDF folder,
+then double-click the PDF and press Auto-play. If the PDF was opened with
+Open PDF, attach the text file with Open narration first. Pause narration
+interrupts speech; Continue resumes it and advances past exercise waits.
+
+Test the selected voice and classroom audio output on the Windows laptop,
+including playback with the network disconnected. Available voices vary by
+browser and computer. The script format is documented in docs/NARRATION.md.
 
 QUICK KEYS
 Right/Space = next page; Left = previous; B = blank/restore audience;

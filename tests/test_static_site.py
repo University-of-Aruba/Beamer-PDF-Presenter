@@ -112,6 +112,7 @@ class StaticSiteTests(unittest.TestCase):
         for name in (
             "app.mjs", "countdown.mjs", "timer-view.mjs", "splitter.mjs",
             "pdf-library.mjs", "pdf-activation.mjs", "laser-pointer.mjs", "branding.mjs",
+            "narration.mjs", "narration-player.mjs", "narration-controls.mjs", "narration-audience.mjs", "preview-render.mjs", "page-render-cache.mjs", "sample-beamer.txt",
             "LICENSE.txt", "NOTICE", "THIRD_PARTY_NOTICES.md",
             "LICENSES/original-beamer-presenter-MIT.txt", "LICENSES/core-js-3.50.0-MIT.txt",
             "LICENSES/quickjs-MIT.txt", "LICENSES/pdf-js-quickjs-MIT.txt",

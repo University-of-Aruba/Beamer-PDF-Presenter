@@ -21,5 +21,5 @@ in `catalog.json`. The supplied server discovers PNG files automatically.
 `sisstem.png` is an unmodified copy of the existing SISSTEM gear asset. Its
 SHA-256 is `14f9b8ca2f0f41347129da408760827af3c10d561cb40691c5459518318526d9`.
 
-The supplied faculty and program marks are documented in [SOURCES.md](SOURCES.md).
+The supplied University of Aruba marks are documented in [SOURCES.md](SOURCES.md).
 They retain their owners’ rights and are not licensed under the software’s Apache-2.0 grant.

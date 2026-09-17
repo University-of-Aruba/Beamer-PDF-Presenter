@@ -1,0 +1,53 @@
+[format: math1-narration-v1]
+[pdf: sample-beamer.pdf]
+[pdf-pages: 4]
+[pdf-sha256: 81ed625c1470276e337c6c7f605efee9acdfca48e5104efd7530b7c343e2a0fc]
+
+[slide: 1 | Beamer Presenter]
+[pages: 1-1]
+
+Okay, so let's have a look at this small example. When we present, we want the class to see the current page, but it is useful for us to see what comes next as well.
+
+That is the idea here. The projector shows the current page, and the laptop gives us a preview of the following page. So we can prepare the next part of the explanation while the class is still looking at the current one.
+
+[pause: brief]
+
+Let's see how that works when a slide builds up one point at a time.
+
+[slide: 2 | What the presenter sees]
+[pages: 2-3]
+
+Here we have three points, but only the first one is active. The other two are still faded.
+
+[cue: Look now at the first bullet and compare its colour with the two below it.]
+
+The first point tells us that the current page is shown at a large size. Now, when we move forward, do we necessarily move to a completely different slide?
+
+[pause: think]
+
+[reveal: 2 | Look now at the second bullet. It has become active.]
+
+No, we can stay with the same slide and reveal the next point. The first point remains visible, and now the second one is active too.
+
+This second point describes the preview beside the current page. It lets us see the next presentation step before showing it to the class.
+
+So there is a small distinction here. What we think of as one slide can occupy more than one page in the PDF. In this example, moving from PDF page two to page three gives us the next reveal of the same slide.
+
+[cue: Look now at the third bullet, which is still faded.]
+
+The last point describes the separate audience window. It follows the current presentation page. This sample does not include another reveal to make that last point active, so we will move on to the controls.
+
+[slide: 3 | Useful controls]
+[pages: 4-4]
+
+Okay, these are the controls shown in the sample. Space or the right arrow moves to the next PDF page. As we just saw, that might reveal another point rather than start a new slide.
+
+[cue: Look now at the row labelled B.]
+
+B blanks the audience screen. Pressing B again restores it. That is useful when we want the class to stop looking at the slide for a moment.
+
+The letter O opens the audience window or brings it into focus. In that audience window, F enters fullscreen.
+
+[wait: Try blanking and restoring the audience screen, then opening the audience window. Continue when ready to finish.]
+
+So we have the current page for the class, a preview of what comes next for the presenter, and a few controls to manage what the audience sees.

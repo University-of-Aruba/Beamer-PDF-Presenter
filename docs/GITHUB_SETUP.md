@@ -10,7 +10,7 @@ Suggested repository name: **beamer-pdf-presenter**.
 Suggested About description:
 
 > A PDF presenter for university lecturers: private current/next previews,
-> audience display, laser pointer, classroom timers and offline Windows use.
+> audience display, prepared narration and offline Windows use.
 
 Useful topics: `pdf`, `presentation`, `education`, `beamer`, `offline`,
 `javascript`, `university`.
@@ -32,15 +32,41 @@ for the supplied workflows.
 
 ## 2. Let GitHub validate and build the Windows package
 
-Open **Actions → Validate and package** after the push. It runs on Ubuntu and
-Windows. The Windows job builds the locked offline ZIP, extracts it and runs
-the bundled Python integrity check before storing a workflow artifact.
+The **Validate and package** workflow runs on each push and pull request.
+It can also be started through **Actions → Validate and package → Run workflow**.
+It tests the source on Ubuntu and Windows. The Windows job builds the locked
+offline ZIP, extracts it and runs the bundled Python integrity check before
+storing a workflow artifact.
 
-Wait for both jobs to pass. Download the **Beamer-PDF-Presenter-Windows-x64-…**
-artifact from the successful run. Extract this outer Actions archive: the
-inner **Windows-x64-Offline.zip** and its `.sha256` are the files to distribute.
-Actions artifacts expire after 30 days and are maintainer build outputs;
-lecturers should use a GitHub Release for a stable download.
+### Test a pushed revision on Windows
+
+1. Commit the reviewed source changes and push them to GitHub. Include new
+   files such as the narration modules, their tests, `sample-beamer.txt` and
+   `docs/NARRATION.md`; `git commit -am` alone does not include new files.
+2. Open **Actions → Validate and package** and select the run whose commit
+   matches the push. Wait for both Ubuntu and Windows jobs to pass.
+3. Download `Beamer-PDF-Presenter-Windows-x64-<run number>` from that run.
+   Extract the outer Actions archive to find the
+   `Beamer-PDF-Presenter-<version>-Windows-x64-Offline.zip` and its `.sha256`.
+4. Right-click the inner offline ZIP and choose **Extract All**, using a fresh
+   folder. Open the extracted `Beamer-PDF-Presenter` folder and double-click
+   `start-windows.bat`. Keep the console window open.
+5. Select **Load demo** and open the audience window. Choose an installed
+   local voice if needed, then press **Auto-play**. Listen through the intended
+   classroom audio output, check the overlay reveal and confirm that the
+   exercise waits for **Continue**. Also check playback with the network
+   disconnected. Windows voice availability and audible output require this
+   check on the intended laptop; the workflow verifies package files.
+
+This test build needs no tag, release or VERSION change. Select it by the
+Actions run and commit, because its filename may contain the same version as
+an earlier build. Pushing source does not replace files attached to an
+existing release. The automatically generated **Source code** archives also
+require the source setup and do not include the portable Windows runtime.
+
+Actions artifacts have a configured retention of 30 days. For a stable
+lecturer download, attach the checked inner offline ZIP and its checksum to
+a GitHub Release.
 
 ## 3. Publish the lecturer download
 

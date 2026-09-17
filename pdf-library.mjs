@@ -13,7 +13,15 @@ export function comparePdfNames(left, right) {
   return filenameCollator.compare(left, right) || (left < right ? -1 : left > right ? 1 : 0);
 }
 
-function makeEntries(descriptors) {
+/** Attach only same-stem TXT files discovered in the explicitly selected folder. */
+function makeEntries(descriptors, narrationDescriptors) {
+  const narrationByStem = new Map();
+  for (const descriptor of narrationDescriptors) {
+    const stem = descriptor.name.slice(0, -4);
+    const matches = narrationByStem.get(stem) || [];
+    matches.push(descriptor);
+    narrationByStem.set(stem, matches);
+  }
   const folderId = `pdf-folder-${++folderSequence}`;
   const names = new Set();
   return Object.freeze(descriptors
@@ -23,9 +31,18 @@ function makeEntries(descriptors) {
         throw new Error(`The selected folder contains duplicate filenames: ${descriptor.name}`);
       }
       names.add(descriptor.name);
+      const narrationMatches = narrationByStem.get(descriptor.name.slice(0, -4)) || [];
       return Object.freeze({
         ...descriptor,
         id: `${folderId}/${encodeURIComponent(descriptor.name)}`,
+        async getNarrationFile() {
+          if (narrationMatches.length > 1) {
+            throw new Error(`Multiple narration files match ${descriptor.name}: `
+              + narrationMatches.map((match) => match.name).join(", ")
+              + ". Choose a narration file explicitly.");
+          }
+          return narrationMatches.length ? narrationMatches[0].getFile() : null;
+        },
       });
     }));
 }
@@ -34,7 +51,10 @@ function makeEntries(descriptors) {
  * List immediate PDFs in an explicitly permitted FileSystemDirectoryHandle.
  *
  * Returns {name, entries}. Every entry has an opaque session ID, filename,
- * lazy getFile() function, and original handle for optional isSameEntry checks.
+ * lazy getFile() function, getNarrationFile() reader, and original handle for
+ * optional isSameEntry checks. The narration reader returns a same-stem TXT
+ * File or null, with a case-insensitive extension and a case-sensitive stem.
+ * Ambiguous narration matches and file-read failures reject only when requested.
  * Subdirectories are ignored. Permission and enumeration failures propagate;
  * callers should retain the previously selected library until this completes.
  */
@@ -43,23 +63,28 @@ export async function readPdfDirectory(directoryHandle) {
     throw new TypeError("A permitted PDF folder is required.");
   }
   const descriptors = [];
+  const narrationDescriptors = [];
   for await (const [name, handle] of directoryHandle.entries()) {
     if (handle?.kind === "file" && isPdfName(name)) {
       if (typeof handle.getFile !== "function") {
         throw new TypeError(`The PDF file cannot be opened: ${name}`);
       }
       descriptors.push({ name, handle, getFile: () => handle.getFile() });
+    } else if (handle?.kind === "file" && /\.txt$/i.test(name)) {
+      narrationDescriptors.push({ name, getFile: () => handle.getFile() });
     }
   }
-  return { name: directoryHandle.name || "PDF folder", entries: makeEntries(descriptors) };
+  return { name: directoryHandle.name || "PDF folder", entries: makeEntries(descriptors, narrationDescriptors) };
 }
 
 /**
  * Build a folder library from a directory input's FileList without reading PDFs.
  *
  * webkitRelativePath must identify one selected root. Only root/filename.pdf
- * entries are retained; nested PDFs are ignored. Captured File objects remain
- * usable for this session. A normal file input cannot establish folder access.
+ * entries are listed; nested files are ignored. Each entry's getNarrationFile()
+ * returns its immediate same-stem TXT File or null, and rejects ambiguous
+ * matches only when requested. Captured File objects remain usable for this
+ * session. A normal file input cannot establish folder access.
  */
 export function pdfEntriesFromFileList(fileList) {
   const files = Array.from(fileList || []);
@@ -67,6 +92,7 @@ export function pdfEntriesFromFileList(fileList) {
 
   let rootName = null;
   const descriptors = [];
+  const narrationDescriptors = [];
   for (const file of files) {
     const parts = typeof file.webkitRelativePath === "string"
       ? file.webkitRelativePath.split("/")
@@ -80,9 +106,11 @@ export function pdfEntriesFromFileList(fileList) {
     rootName = parts[0];
     if (parts.length === 2 && isPdfName(parts[1])) {
       descriptors.push({ name: parts[1], getFile: async () => file });
+    } else if (parts.length === 2 && /\.txt$/i.test(parts[1])) {
+      narrationDescriptors.push({ name: parts[1], getFile: async () => file });
     }
   }
-  return { name: rootName, entries: makeEntries(descriptors) };
+  return { name: rootName, entries: makeEntries(descriptors, narrationDescriptors) };
 }
 
 /**

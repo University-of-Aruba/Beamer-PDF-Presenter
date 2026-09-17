@@ -97,7 +97,6 @@ subject to their owners' copyright, trademark and permission terms. The software
 license does not grant rights to use or redistribute those names or marks, and
 their inclusion does not imply institutional endorsement.
 
-Asset provenance is recorded separately in `assets/README.md` and
-`logos/README.md`. Use institution-specific assets only under the applicable
+Asset provenance is recorded in `logos/SOURCES.md`. Use institution-specific assets only under the applicable
 owner's permission; a generic presenter can operate without them. Adding an
 asset to the logo selector does not license it under Apache 2.0.
